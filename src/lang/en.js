@@ -61,7 +61,7 @@ export default {
     theme: 'Theme',
     clipboardDemo: 'Clipboard',
     i18n: 'I18n',
-    externalLink: 'External Link'
+    backendLink: 'Backend Link'
   },
   navbar: {
     logOut: 'Log Out',
