@@ -36,3 +36,26 @@ export function deleteRole(id) {
     method: 'delete'
   })
 }
+
+export function fetchList(query) {
+  return request({
+    url: '/role/page',
+    method: 'get',
+    params: query
+  })
+}
+
+export function fetchRole(id) {
+  return request({
+    url: `/role/${id}`,
+    method: 'get'
+  })
+}
+
+export function createRolePermission(data) {
+  return request({
+    url: `/role/permission`,
+    method: 'post',
+    data
+  })
+}

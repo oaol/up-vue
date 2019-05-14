@@ -22,3 +22,11 @@ export function logout() {
   })
 }
 
+export function getUserByPage(query) {
+  return request({
+    url: '/user/page',
+    method: 'get',
+    query
+  })
+}
+
