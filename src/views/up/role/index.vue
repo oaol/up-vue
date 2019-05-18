@@ -52,14 +52,17 @@
       </el-table-column>
       <el-table-column :label="$t('roleTable.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+          <!-- <el-button type="primary" size="mini" @click="handleUpdate(row)">
             {{ $t('roleTable.edit') }}
           </el-button>
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleModifyStatus(row,'deleted')">
             {{ $t('roleTable.delete') }}
-          </el-button>
-          <el-button type="primary" size="mini" @click="handleAddRolePermission(row.roleId)">
+          </el-button> -->
+          <el-button type="primary" size="middle" @click="handleAddRolePermission(row.roleId)">
             {{ $t('roleTable.createRolePermission') }}
+          </el-button>
+          <el-button type="primary" size="middle" @click="handleRolePermission(row.roleId)">
+            {{ $t('roleTable.rolePermission') }}
           </el-button>
         </template>
       </el-table-column>
@@ -247,6 +250,9 @@ export default {
     handleFilter() {
       this.listQuery.page = 1
       this.getList()
+    },
+    handleRolePermission(roleId) {
+      this.$router.push({ path: '/role/permission/index', query: { roleId: roleId }})
     },
     handleAddRolePermission(roleId, status) {
       this.rolePermissionTemp.roleId = roleId

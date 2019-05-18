@@ -376,8 +376,8 @@ export const asyncRoutes = [
     children: [
       {
         path: 'index',
-        component: () => import('@/views/up/user/index'), // Parent router-view
         name: 'User',
+        component: () => import('@/views/up/user/index'), // Parent router-view
         meta: { title: 'user' }
       }
     ]
@@ -429,6 +429,18 @@ export const asyncRoutes = [
         name: 'permissionManagement',
         component: () => import('@/views/up/permission/index'),
         meta: { title: 'permissionManagement' }
+      }
+    ]
+  },
+  {
+    path: '/role/permission',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'rolePermission',
+        component: () => import('@/views/up/role-permission/index'),
+        meta: { title: 'rolePermission' }
       }
     ]
   },

@@ -163,6 +163,7 @@ export default {
     permissionValue: '权限值',
     permissionId: '权限 ID',
     createRolePermission: '添加权限',
+    rolePermission: '查看权限',
     name: '权限名',
     icon: '图标',
     ctime: '创建时间',
