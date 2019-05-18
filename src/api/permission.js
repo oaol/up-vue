@@ -31,6 +31,13 @@ export function updatePermission(data) {
   })
 }
 
+export function fetchPermissionByName(query) {
+  return request({
+    url: `/permission/role/permission`,
+    method: 'get',
+    params: query
+  })
+}
 
 export function deletePermission(id) {
   return request({

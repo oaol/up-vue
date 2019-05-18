@@ -25,17 +25,17 @@
           <span>{{ scope.row.roleId }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('roleTable.name')" prop="name" sortable="custom" align="center" >
+      <el-table-column :label="$t('roleTable.name')" prop="name" sortable="custom" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('roleTable.title')" prop="title" sortable="custom" align="center" >
+      <el-table-column :label="$t('roleTable.title')" prop="title" sortable="custom" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.title }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('roleTable.description')" prop="description" sortable="custom" align="center" >
+      <el-table-column :label="$t('roleTable.description')" prop="description" sortable="custom" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.description }}</span>
         </template>
@@ -58,7 +58,7 @@
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleModifyStatus(row,'deleted')">
             {{ $t('roleTable.delete') }}
           </el-button>
-            <el-button type="primary" size="mini" @click="handleAddRolePermission(row.roleId)">
+          <el-button type="primary" size="mini" @click="handleAddRolePermission(row.roleId)">
             {{ $t('roleTable.createRolePermission') }}
           </el-button>
         </template>
@@ -100,14 +100,28 @@
       </div>
     </el-dialog>
 
-   <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="permissionDialogFormVisible">
       <el-form ref="permissionForm" :rules="rules" :model="rolePermissionTemp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
         <el-form-item :label="$t('roleTable.permissionId')" prop="permissionId">
-          <el-input v-model="rolePermissionTemp.permissionId" :autosize="{ minRows: 2}" type="text" placeholder="Please input" />
+          <el-select
+            v-model="rolePermissionTemp.permissionId"
+            filterable
+            remote
+            reserve-keyword
+            placeholder="请输入关键词"
+            :remote-method="fetchPermissionByName"
+          >
+            <el-option
+              v-for="item in rolePermissions"
+              :key="item.permissionId"
+              :label="item.name"
+              :value="item.permissionId"
+            />
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
+        <el-button @click="permissionDialogFormVisible = false">
           {{ $t('roleTable.cancel') }}
         </el-button>
         <el-button type="primary" @click="createRolePermission">
@@ -129,11 +143,12 @@
 
 <script>
 import { fetchList, createRole, updateRole, fetchRole, createRolePermission } from '@/api/role'
+import { fetchPermissionByName } from '@/api/permission'
 import waves from '@/directive/waves' // Waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 
-const calendarTypeOptions = [//类型(1:目录,2:菜单,3:按钮)
+const calendarTypeOptions = [// 类型(1:目录,2:菜单,3:按钮)
   { key: '1', display_name: 'Directory' },
   { key: '2', display_name: 'Menu' },
   { key: '3', display_name: 'Button' }
@@ -174,6 +189,10 @@ export default {
         type: undefined,
         roleId: undefined
       },
+      permissionQuery: {
+        roleId: undefined,
+        name: undefined
+      },
       calendarTypeOptions,
       temp: {
         id: undefined,
@@ -188,7 +207,9 @@ export default {
         roleId: undefined,
         permissionId: undefined
       },
+      rolePermissions: [],
       dialogFormVisible: false,
+      permissionDialogFormVisible: false,
       dialogStatus: '',
       textMap: {
         update: 'Edit',
@@ -209,6 +230,12 @@ export default {
     this.getList()
   },
   methods: {
+    fetchPermissionByName(query) {
+      this.permissionQuery.name = query
+      fetchPermissionByName(this.permissionQuery).then(response => {
+        this.rolePermissions = response.data
+      })
+    },
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
@@ -223,8 +250,9 @@ export default {
     },
     handleAddRolePermission(roleId, status) {
       this.rolePermissionTemp.roleId = roleId
+      this.permissionQuery.roleId = roleId
       this.dialogStatus = 'createRolePermission'
-      this.dialogFormVisible = true
+      this.permissionDialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['permissionForm'].clearValidate()
       })
@@ -270,7 +298,7 @@ export default {
         if (valid) {
           createRolePermission(this.rolePermissionTemp).then(() => {
             this.getList()
-            this.dialogFormVisible = false
+            this.permissionDialogFormVisible = false
             this.$notify({
               title: '成功',
               message: '创建成功',
@@ -314,7 +342,7 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateArticle(tempData).then(() => {
+          updateRole(tempData).then(() => {
             for (const v of this.list) {
               if (v.id === this.temp.id) {
                 const index = this.list.indexOf(v)
@@ -344,7 +372,7 @@ export default {
       this.list.splice(index, 1)
     },
     handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
+      fetchRole(pv).then(response => {
         this.pvData = response.data.pvData
         this.dialogPvVisible = true
       })
